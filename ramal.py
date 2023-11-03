@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 # Load historical data
-@st.cache
+@st.cache_data
 def load_data():
     data = pd.read_csv("harga_real.csv")
     return data
