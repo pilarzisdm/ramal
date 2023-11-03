@@ -21,7 +21,7 @@ data = load_data()
 commodity_choice = st.selectbox("Select Commodity", data.columns[1:])  # Assuming the first column is "Date"
 
 # Split data into training and testing sets
-X = data.drop(columns=["Date", commodity_choice])
+X = data.drop(columns=["Tanggal", commodity_choice])
 y = data[commodity_choice]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
