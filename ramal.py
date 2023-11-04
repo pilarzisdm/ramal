@@ -48,7 +48,7 @@ if len(commodities) > 0:
                 forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
 
                 # Update the forecasted values for the selected commodity in the main DataFrame
-                forecast_data[commodity] = forecast_df[commodity]
+                forecast_data = forecast_data.append(forecast_df)  # Append the forecast to the DataFrame
 
             # Display the forecasted data in the main content area
             st.subheader("Hasil Peramalan")
