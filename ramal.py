@@ -49,15 +49,8 @@ if len(commodities) > 0:
             # Concatenate the forecasted data to the original data
             forecast_data = pd.concat([forecast_data, forecast_df])
 
-        # Display the forecasted data with both commodities and the date part (remove time)
-        forecasted_data = forecast_data.tail(forecasting_days)[commodities]
-        data_to_display = []
-
-        for commodity in commodities:
-            date_forecast = [str(date)[:10] for date in forecasted_data.index]
-            data_to_display.append({'Commodity': commodity, 'Date': date_forecast})
-
-        st.write(data_to_display)
+           # Display the forecasted data
+            st.write(forecast_data.tail(forecasting_days)[commodities])
 
 
 else:
