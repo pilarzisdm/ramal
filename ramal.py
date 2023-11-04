@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load the CSV data
-@st.cache_data
+@st.cache_
 def load_data():
     data = pd.read_csv("harga_real.csv")
     data['Tanggal'] = pd.to_datetime(data['Tanggal'])  # Parse the date column as datetime
@@ -23,7 +23,6 @@ data = load_data()
 if len(commodities) > 0:
     selected_data = data[['Tanggal'] + commodities]
     selected_data = selected_data.sort_values(by='Tanggal', ascending=False)
-
 
     st.subheader("Harga Komoditas")
     selected_data['Tanggal'] = selected_data['Tanggal'].dt.date  # Extract date portion
