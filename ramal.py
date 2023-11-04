@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # Load the CSV data
 @st.cache_data
@@ -8,17 +9,46 @@ def load_data():
     data['Tanggal'] = pd.to_datetime(data['Tanggal'])  # Parse the date column as datetime
     return data
 
+# Sidebar: Select commodities
+st.sidebar.title("Pilih Komoditas")
+commodities = st.sidebar.multiselect("Pilih satu atau lebih komoditas", ["Beras", "Daging Ayam", "Telur Ayam", "Cabai Merah", "Cabai Rawit"])
+
 # Main content
-st.title("Next Day Forecast")
+st.title("Peramalan Harga Komoditas Harian")
 
 # Load data
 data = load_data()
 
-# Get the last date in the dataset
-last_date = data['Tanggal'].max()
+# Filter data based on selected commodities
+if len(commodities) > 0:
+    selected_data = data[['Tanggal'] + commodities]
+    selected_data = selected_data.sort_values(by='Tanggal', ascending=False)
 
-# Calculate the next day
-next_day = last_date + pd.DateOffset(days=1)
+    st.subheader("Harga Komoditas")
+    selected_data['Tanggal'] = selected_data['Tanggal'].dt.date  # Extract date portion
+    st.write(selected_data.set_index('Tanggal'))
 
-st.write("Last Date:", last_date.date())
-st.write("Next Day:", next_day.date())
+    # Perform forecasting for selected commodities into the future
+    st.subheader("Peramalan Harga Komoditas untuk Hari Mendatang")
+
+    forecasting_days = st.number_input("Masukkan jumlah hari untuk peramalan:", min_value=1, step=1)
+
+    if st.button("Forecast"):
+        forecast_data = selected_data.copy()
+
+        for commodity in commodities:
+            # Calculate the Simple Moving Average (SMA) for the commodity
+            forecast_data[commodity + '_SMA'] = forecast_data[commodity].rolling(window=7).mean()
+
+            # Use the SMA to forecast future values
+            last_date = forecast_data['Tanggal'].max()
+            forecast_dates = pd.date_range(start=last_date + pd.DateOffset(1), periods=forecasting_days)
+            forecast_values = [forecast_data[commodity + '_SMA'].iloc[-1]] * forecasting_days
+            forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
+            forecast_data = forecast_data.append(forecast_df)
+
+        # Display the forecasted data
+        st.write(forecast_data.tail(forecasting_days)[commodities])
+
+else:
+    st.warning("Silakan pilih satu atau lebih komoditas.")
