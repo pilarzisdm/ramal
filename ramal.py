@@ -27,7 +27,7 @@ if len(commodities) > 0:
 
     st.subheader("Harga Komoditas")
     selected_data['Tanggal'] = selected_data['Tanggal'].dt.date  # Extract date portion
-    st.write(selected_data.set_index('Tanggal'))
+    #st.write(selected_data.set_index('Tanggal'))
 
     # Perform forecasting for selected commodities into the future
     st.subheader("Peramalan Harga Komoditas untuk Hari Mendatang")
