@@ -4,7 +4,7 @@ import pandas as pd
 # Load the CSV data
 @st.cache
 def load_data():
-    data = pd.read_csv("harga_real.csv")
+    data = pd.read csv("harga_real.csv")
     data['Tanggal'] = pd.to_datetime(data['Tanggal'])  # Parse the date column as datetime
     return data
 
@@ -48,8 +48,8 @@ if len(commodities) > 0:
                 forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
 
                 # Update the forecasted values for the selected commodity in the main DataFrame
-                forecast_data = forecast_data.append(forecast_df)  # Append the forecast to the DataFrame
+                forecast_data = pd.concat([forecast_data, forecast_df], axis=1)  # Concatenate DataFrames
 
             # Display the forecasted data in the main content area
             st.subheader("Hasil Peramalan")
-            st.write(forecast_data.tail(forecasting_days)[commodities])
+            st.write(forecast_data.tail(forecasting_days))
