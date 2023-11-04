@@ -12,7 +12,7 @@ def load_data():
 
 # Sidebar: Select commodities
 st.sidebar.title("Pilih Komoditas")
-commodities = st.sidebar.multiselect("Pilih satu atau lebih komoditas", ["Beras", "Daging Ayam", "Telur Ayam", "Cabai Merah", "Cabai Rawit"])
+commodities = st.sidebar.multiselect("Pilih satu atau lebih komoditas", ["Beras", "Daging Ayam", "Telur Ayam", "Cabai Merah", "Cabai Rawit")
 
 # Main content area
 st.title("Peramalan Harga Komoditas Harian")
@@ -24,7 +24,6 @@ if len(commodities) > 0:
     # Filter data based on selected commodities
     selected_data = data[['Tanggal'] + commodities]
     selected_data = selected_data.sort_values(by='Tanggal', ascending=False)
-
 
     # Display the data table for selected commodities
     st.subheader("Harga Komoditas")
@@ -56,6 +55,9 @@ if len(commodities) > 0:
 
                 # Update the forecasted values for the selected commodity in the main DataFrame
                 forecast_data[commodity].iloc[-forecasting_days:] = forecast_values
+
+            # Format the forecasted data to remove decimal places
+            forecast_data = forecast_data.round(0)
 
             # Display the forecasted data in the main content area
             st.subheader("Hasil Peramalan")
