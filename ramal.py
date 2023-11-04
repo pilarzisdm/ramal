@@ -3,10 +3,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load the CSV data
-@st.cache
+@st.cache_data
 def load_data():
     data = pd.read_csv("harga_real.csv")
-    data['Tanggal'] = pd.to_datetime(data['Tanggal']).dt.date  # Convert to date (without time)
+    data['Tanggal'] = pd.to_datetime(data['Tanggal'])  # Parse the date column as datetime
     return data
 
 # Sidebar: Select commodities
@@ -25,6 +25,7 @@ if len(commodities) > 0:
     selected_data = selected_data.sort_values(by='Tanggal', ascending=False)
 
     st.subheader("Harga Komoditas")
+    selected_data['Tanggal'] = selected_data['Tanggal'].dt.date  # Extract date portion
     st.write(selected_data.set_index('Tanggal'))
 
     # Perform forecasting for selected commodities into the future
@@ -48,8 +49,8 @@ if len(commodities) > 0:
             # Concatenate the forecasted data to the original data
             forecast_data = pd.concat([forecast_data, forecast_df])
 
-        # Display the forecasted data with only the date part (remove time)
-        st.write(forecast_data.tail(forecasting_days)[commodities].index.astype(str))
+        # Display the forecasted data
+        st.write(forecast_data.tail(forecasting_days)[commodities])
 
 else:
     st.warning("Silakan pilih satu atau lebih komoditas.")
