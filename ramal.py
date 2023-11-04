@@ -29,7 +29,7 @@ if len(commodities) > 0:
     st.write(selected_data.set_index('Tanggal'))
 
     # Sidebar: Input for forecasting
-    st.sidebar.subheader("Peramalan Harga Komoditas untuk Hari Mendatang")
+    st.sidebar.subheader("Peramalan Harga Komoditas")
     forecasting_days = st.sidebar.number_input("Masukkan jumlah hari untuk peramalan:", min_value=1, step=1)
 
     if st.sidebar.button("Forecast"):
@@ -43,17 +43,16 @@ if len(commodities) > 0:
                 # Use the SMA to forecast future values for each selected commodity
                 last_date = forecast_data['Tanggal'].max()
 
-                # Create forecast values as a list
+                # Create forecast values as a list starting from the last date
+                forecast_dates = pd.date_range(start=last_date + pd.DateOffset(1), periods=forecasting_days)
                 forecast_values = [forecast_data[commodity + '_SMA'].iloc[-1]] * forecasting_days
+                forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
 
                 # Update the forecasted values for the selected commodity in the main DataFrame
-                forecast_data[commodity].iloc[-forecasting_days:] = forecast_values
+                forecast_data = pd.concat([forecast_data, forecast_df])
 
-                # Remove the duplicate columns (commodity + '_SMA')
-                forecast_data = forecast_data.drop(columns=[commodity + '_SMA'])
-
-            # Remove the index column (number)
-            forecast_data = forecast_data.reset_index(drop=True)
+            # Remove the duplicate columns (commodity + '_SMA')
+            forecast_data = forecast_data.drop(columns=[commodity + '_SMA'])
 
             # Display the forecasted data in the main content area
             st.subheader("Hasil Peramalan")
