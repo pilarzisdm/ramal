@@ -1,17 +1,67 @@
+import streamlit as st
 import pandas as pd
+import numpy as np
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
-# Load your data from the CSV file
-data = pd.read_csv("ramal.csv")
+# Load the CSV data
+@st.cache
+def load_data():
+    data = pd.read_csv("ramal.csv")
+    data['Tanggal'] = pd.to_datetime(data['Tanggal'])  # Parse the date column as datetime
+    return data
 
-# Assuming the date column in your CSV is named 'Tanggal'
-# First, make sure 'Tanggal' is in datetime format
-data['Tanggal'] = pd.to_datetime(data['Tanggal'])
+# Sidebar: Select commodities
+st.sidebar.title("Pilih Komoditas")
+commodities = st.sidebar.multiselect("Pilih satu atau lebih komoditas", ["Beras", "Daging Ayam", "Telur Ayam", "Cabai Merah", "Cabai Rawit"])
 
-# Find the last date in the data series
-last_date = data['Tanggal'].max()
+# Main content area
+st.title("Peramalan Harga Komoditas Harian")
 
-# Calculate the next day
-next_day = last_date + pd.DateOffset(1)
+if len(commodities) > 0:
+    # Load data when commodities are selected
+    data = load_data()
 
-# Print the next day
-print("Next day after the last date:", next_day)
+    # Find the last date in the data series
+    last_date = data['Tanggal'].max()
+
+    # Calculate the next day
+    start_date = last_date + pd.DateOffset(1)
+
+    # Filter data based on selected commodities
+    selected_data = data[['Tanggal'] + commodities]
+    selected_data = selected_data.sort_values(by='Tanggal', ascending=False)
+
+    # Display the data table for selected commodities
+    st.subheader("Harga Komoditas")
+    selected_data['Tanggal'] = selected_data['Tanggal'].dt.date  # Extract date portion
+    st.write(selected_data.set_index('Tanggal'))
+
+    # Sidebar: Input for forecasting
+    st.sidebar.subheader("Peramalan Harga Komoditas")
+    forecasting_days = st.sidebar.number_input("Masukkan jumlah hari untuk peramalan:", min_value=1, step=1)
+
+    if st.sidebar.button("Forecast"):
+        if len(commodities) > 0:
+            forecast_data = selected_data.copy()
+
+            for commodity in commodities:
+                # Use Exponential Smoothing to forecast future values for each selected commodity
+                forecast_dates = pd.date_range(start=start_date, periods=forecasting_days)
+
+                # Fit the Exponential Smoothing model and make forecasts
+                model = ExponentialSmoothing(forecast_data[commodity], trend='add', seasonal='add', seasonal_periods=7)
+                model_fit = model.fit()
+                forecast_values = model_fit.forecast(steps=forecasting_days)
+
+                # Create a DataFrame for the forecasted commodity values
+                forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
+
+                # Update the forecasted values for the selected commodity in the main DataFrame
+                forecast_data = forecast_data.append(forecast_df)
+
+            # Format the forecasted data to remove decimal places
+            forecast_data = forecast_data.round(0)
+
+            # Display the forecasted data in the main content area
+            st.subheader("Hasil Peramalan")
+            st.write(forecast_data.tail(forecasting_days))
