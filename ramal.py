@@ -50,7 +50,7 @@ if len(commodities) > 0:
             forecast_data = pd.concat([forecast_data, forecast_df])
 
         # Display the forecasted data
-        st.write(forecast_data.tail(forecasting_days)[commodities])
+        #st.write(forecast_data.tail(forecasting_days)[commodities])
 
 else:
     st.warning("Silakan pilih satu atau lebih komoditas.")
