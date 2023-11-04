@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
 
 # Load the CSV data
 @st.cache_data
@@ -41,8 +40,8 @@ if len(commodities) > 0:
             # Calculate forecasts for the selected number of days into the future
             last_date = forecast_data.index[-1]
             for day in range(1, forecasting_days + 1):
-                next_date = last_date + pd.DateOffset(days=day)
-                forecast_data.loc[next_date, commodity] = np.nan  # Initialize forecast values
+                next_date = last_date + pd.Timedelta(days=day)
+                forecast_data.loc[next_date, commodity] = None  # Initialize forecast values
 
         # Display the forecasted data
         st.write(forecast_data.tail(forecasting_days))
