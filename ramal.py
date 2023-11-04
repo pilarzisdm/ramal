@@ -37,20 +37,26 @@ if len(commodities) > 0:
         forecast_data = selected_data.copy()
 
         for commodity in commodities:
+            # Create a separate DataFrame for each commodity
+            forecast_data_commodity = forecast_data[['Tanggal', commodity]].copy()
+
             # Calculate the Simple Moving Average (SMA) for the commodity
-            forecast_data[commodity + '_SMA'] = forecast_data[commodity].rolling(window=7).mean()
+            forecast_data_commodity[commodity + '_SMA'] = forecast_data_commodity[commodity].rolling(window=7).mean()
 
             # Use the SMA to forecast future values
-            last_date = forecast_data['Tanggal'].max()
+            last_date = forecast_data_commodity['Tanggal'].max()
             forecast_dates = pd.date_range(start=last_date + pd.DateOffset(1), periods=forecasting_days)
-            forecast_values = [forecast_data[commodity + '_SMA'].iloc[-1]] * forecasting_days
+            forecast_values = [forecast_data_commodity[commodity + '_SMA'].iloc[-1]] * forecasting_days
             forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
 
             # Concatenate the forecasted data to the original data
-            forecast_data = pd.concat([forecast_data, forecast_df])
+            forecast_data_commodity = pd.concat([forecast_data_commodity, forecast_df])
+
+            # Update the combined forecast data
+            forecast_data = forecast_data.merge(forecast_data_commodity[['Tanggal', commodity, commodity + '_SMA']], on='Tanggal', how='outer')
 
         # Display the forecasted data
-        st.write(forecast_data.tail(forecasting_days)[commodities])
+        st.write(forecast_data.tail(forecasting_days))
 
 else:
     st.warning("Silakan pilih satu atau lebih komoditas.")
