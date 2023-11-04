@@ -45,7 +45,9 @@ if len(commodities) > 0:
             forecast_dates = pd.date_range(start=last_date + pd.DateOffset(1), periods=forecasting_days)
             forecast_values = [forecast_data[commodity + '_SMA'].iloc[-1]] * forecasting_days
             forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
-            forecast_data = forecast_data.append(forecast_df)
+
+            # Concatenate the forecasted data to the original data
+            forecast_data = pd.concat([forecast_data, forecast_df])
 
         # Display the forecasted data
         st.write(forecast_data.tail(forecasting_days)[commodities])
