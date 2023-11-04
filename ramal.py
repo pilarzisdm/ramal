@@ -22,7 +22,7 @@ data = load_data()
 # Filter data based on selected commodities
 if len(commodities) > 0:
     selected_data = data[['Tanggal'] + commodities]
-    selected_data = selected_data.sort_values(by='Tanggal', ascending=False)
+    selected_data = selected_data.sort_values by = 'Tanggal', ascending=False)
 
     st.subheader("Harga Komoditas")
     selected_data['Tanggal'] = selected_data['Tanggal'].dt.date  # Extract date portion
@@ -39,9 +39,9 @@ if len(commodities) > 0:
         for commodity in commodities:
             # Calculate forecasts for the selected number of days into the future
             last_date = forecast_data.index[-1]
-            for day in range(1, forecasting_days + 1):
-                next_date = last_date + pd.to_timedelta(day, unit='D')
-                forecast_data.loc[next_date, commodity] = None  # Initialize forecast values
+            forecast_dates = [last_date + pd.DateOffset(days=day) for day in range(1, forecasting_days + 1)]
+            forecast_values = [None] * forecasting_days
+            forecast_data = forecast_data.append(pd.DataFrame({commodity: forecast_values}, index=forecast_dates))
 
         # Display the forecasted data
         st.write(forecast_data.tail(forecasting_days))
