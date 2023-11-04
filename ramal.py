@@ -4,7 +4,7 @@ import numpy as np
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
 # Load the CSV data
-@st.cache
+@st.cache_data
 def load_data():
     data = pd.read_csv("ramal.csv")
     data['Tanggal'] = pd.to_datetime(data['Tanggal'])  # Parse the date column as datetime
