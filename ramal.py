@@ -14,7 +14,6 @@ def load_data():
 st.sidebar.title("Pilih Komoditas")
 commodities = st.sidebar.multiselect("Pilih satu atau lebih komoditas", ["Beras", "Daging Ayam", "Telur Ayam", "Cabai Merah", "Cabai Rawit"])
 
-
 # Main content area
 st.title("Peramalan Harga Komoditas Harian")
 
@@ -42,8 +41,10 @@ if len(commodities) > 0:
             for commodity in commodities:
                 # Use Exponential Smoothing to forecast future values for each selected commodity
                 last_date = forecast_data['Tanggal'].max()
+                
+                # Set the start date as the day after the last date in the data series
                 start_date = last_date + pd.DateOffset(1)
-
+                
                 forecast_dates = pd.date_range(start=start_date, periods=forecasting_days)
 
                 # Fit the Exponential Smoothing model and make forecasts
