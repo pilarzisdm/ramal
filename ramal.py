@@ -54,10 +54,10 @@ if len(commodities) > 0:
         # Display the forecasted data with only the date part (remove time)
         #date_forecast = [str(date)[:10] for date in forecast_data.tail(forecasting_days).index]
         #st.write(date_forecast)
- 
-    
-
-
+        # Display the forecasted data with both commodities and the date part (remove time)
+        date_forecast = [str(date)[:10] for date in forecast_data.tail(forecasting_days).index]
+        forecast_with_commodities = list(zip(commodities, date_forecast))
+        st.write(forecast_with_commodities)
 
 else:
     st.warning("Silakan pilih satu atau lebih komoditas.")
