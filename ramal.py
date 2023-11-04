@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Load the CSV data
 @st.cache_data
@@ -28,54 +29,20 @@ if len(commodities) > 0:
     selected_data['Tanggal'] = selected_data['Tanggal'].dt.date  # Extract date portion
     st.write(selected_data.set_index('Tanggal'))
 
-    # Add select box for granularity just for the plot
-    granularity = st.selectbox("Pilih Granularitas Tanggal untuk Grafik", ["Harian", "Mingguan", "Bulanan"])
-
-    # Determine granularity interval
-    if granularity == "Mingguan":
-        granularity_interval = 'W'
-    elif granularity == "Bulanan":
-        granularity_interval = 'M'
-    else:
-        granularity_interval = 'D'
-
-    # Convert the index to DatetimeIndex
-    selected_data['Tanggal'] = pd.to_datetime(selected_data['Tanggal'])
-    selected_data.set_index('Tanggal', inplace=True)
-
-    # Resample data for the selected granularity
-    resampled_data = selected_data.resample(granularity_interval).last()
-
-    # Plot selected commodities with the selected granularity
-    st.subheader("Grafik Harga Komoditas")
-    fig, ax = plt.subplots(figsize=(10, 5))
-
-    for commodity in commodities:
-        ax.plot(resampled_data.index, resampled_data[commodity], label=commodity)
-
-    ax.set_xlabel("Tanggal")
-    ax.set_ylabel("Harga")
-    ax.set_title("Harga Komoditas Antar Waktu")
-    ax.legend()
-
-    st.pyplot(fig)
-
     # Perform forecasting for selected commodities into the future
     st.subheader("Peramalan Harga Komoditas untuk Hari Mendatang")
 
     forecasting_days = st.number_input("Masukkan jumlah hari untuk peramalan:", min_value=1, step=1)
 
     if st.button("Forecast"):
-        forecast_data = resampled_data.copy()
+        forecast_data = selected_data.copy()
 
         for commodity in commodities:
-            # Calculate the multi-day-ahead forecast using a rolling mean
-            forecast_values = []
-            for _ in range(forecasting_days):
-                last_price = forecast_data[commodity].iloc[-1]
-                forecast_values.append(last_price)
-                # Append the forecasted value for the next day
-                forecast_data[commodity + f" (Forecast D+{_+1})"] = forecast_values
+            # Calculate forecasts for the selected number of days into the future
+            last_date = forecast_data.index[-1]
+            for day in range(1, forecasting_days + 1):
+                next_date = last_date + pd.DateOffset(days=day)
+                forecast_data.loc[next_date, commodity] = np.nan  # Initialize forecast values
 
         # Display the forecasted data
         st.write(forecast_data.tail(forecasting_days))
