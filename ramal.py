@@ -12,7 +12,8 @@ def load_data():
 
 # Sidebar: Select commodities
 st.sidebar.title("Pilih Komoditas")
-commodities = st.sidebar.multiselect("Pilih satu atau lebih komoditas", ["Beras", "Daging Ayam", "Telur Ayam", "Cabai Merah", "Cabai Rawit")
+commodities = st.sidebar.multiselect("Pilih satu atau lebih komoditas", ["Beras", "Daging Ayam", "Telur Ayam", "Cabai Merah", "Cabai Rawit"])
+
 
 # Main content area
 st.title("Peramalan Harga Komoditas Harian")
