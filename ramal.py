@@ -1,6 +1,9 @@
 import pandas as pd
 
-# Assuming your data is in a DataFrame called 'data' and the date column is 'Tanggal'
+# Load your data from the CSV file
+data = pd.read_csv("ramal.csv")
+
+# Assuming the date column in your CSV is named 'Tanggal'
 # First, make sure 'Tanggal' is in datetime format
 data['Tanggal'] = pd.to_datetime(data['Tanggal'])
 
