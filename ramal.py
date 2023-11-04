@@ -49,6 +49,9 @@ if len(commodities) > 0:
                 # Update the forecasted values for the selected commodity in the main DataFrame
                 forecast_data[commodity].iloc[-forecasting_days:] = forecast_values
 
+                # Remove the duplicate columns (commodity + '_SMA')
+                forecast_data = forecast_data.drop(columns=[commodity + '_SMA'])
+
             # Display the forecasted data in the main content area
             st.subheader("Hasil Peramalan")
             st.write(forecast_data.tail(forecasting_days))
