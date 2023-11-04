@@ -59,6 +59,9 @@ if len(commodities) > 0:
             # Format the forecasted data to remove decimal places
             forecast_data = forecast_data.round(0)
 
-            # Display the forecasted data in the main content area without the index column
+            # Reset the index to remove the index column
+            forecast_data = forecast_data.reset_index(drop=True)
+
+            # Display the forecasted data in the main content area
             st.subheader("Hasil Peramalan")
             st.dataframe(forecast_data.tail(forecasting_days), use_container_width=True)
