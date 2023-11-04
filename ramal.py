@@ -39,6 +39,9 @@ if len(commodities) > 0:
             # Create a separate DataFrame for each commodity
             forecast_data_commodity = forecast_data[['Tanggal', commodity]].copy()
 
+            if forecast_data_commodity.empty:
+                continue
+
             # Calculate the Simple Moving Average (SMA) for the commodity
             forecast_data_commodity[commodity + '_SMA'] = forecast_data_commodity[commodity].rolling(window=7).mean()
 
