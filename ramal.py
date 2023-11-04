@@ -42,13 +42,12 @@ if len(commodities) > 0:
 
                 # Use the SMA to forecast future values for each selected commodity
                 last_date = forecast_data['Tanggal'].max()
-                forecast_dates = pd.date_range(start=last_date + pd.DateOffset(1), periods=forecasting_days)
 
+                # Create forecast values as a list
                 forecast_values = [forecast_data[commodity + '_SMA'].iloc[-1]] * forecasting_days
-                forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
 
                 # Update the forecasted values for the selected commodity in the main DataFrame
-                forecast_data = pd.concat([forecast_data, forecast_df], axis=1)  # Concatenate DataFrames
+                forecast_data[commodity].iloc[-forecasting_days:] = forecast_values
 
             # Display the forecasted data in the main content area
             st.subheader("Hasil Peramalan")
