@@ -49,8 +49,8 @@ if len(commodities) > 0:
             # Concatenate the forecasted data to the original data
             forecast_data = pd.concat([forecast_data, forecast_df])
 
-        # Display the forecasted data with only the date part (remove time)
-        st.write(forecast_data.tail(forecasting_days)[commodities].index.strftime('%Y-%m-%d'))
+        # Display the forecasted data
+        st.write(forecast_data.tail(forecasting_days)[commodities])
 
 else:
     st.warning("Silakan pilih satu atau lebih komoditas.")
