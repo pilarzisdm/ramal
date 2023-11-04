@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import statsmodels.api as sm
 
 # Load the CSV data
 @st.cache
@@ -38,29 +39,22 @@ if len(commodities) > 0:
             forecast_data = selected_data.copy()
 
             for commodity in commodities:
-                # Calculate the Simple Moving Average (SMA) for the commodity
-                forecast_data[commodity + '_SMA'] = forecast_data[commodity].rolling(window=7).mean()
-
-                # Use the SMA to forecast future values for each selected commodity
+                # Use Exponential Smoothing to forecast future values for each selected commodity
                 last_date = forecast_data['Tanggal'].max()
-
-                # Set the start date as the day after the last date in the data series
                 start_date = last_date + pd.DateOffset(1)
 
-                # Create date range starting from the determined start date
                 forecast_dates = pd.date_range(start=start_date, periods=forecasting_days)
 
-                # Create forecast values as an array
-                forecast_values = np.array([forecast_data[commodity + '_SMA'].iloc[-1]] * forecasting_days)
+                # Fit the Exponential Smoothing model and make forecasts
+                model = sm.ExponentialSmoothing(forecast_data[commodity], trend='add', seasonal='add', seasonal_periods=7)
+                model_fit = model.fit()
+                forecast_values = model_fit.forecast(steps=forecasting_days)
 
                 # Create a DataFrame for the forecasted commodity values
                 forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
 
                 # Update the forecasted values for the selected commodity in the main DataFrame
                 forecast_data[commodity].iloc[-forecasting_days:] = forecast_values
-
-                # Remove the first column
-                forecast_data = forecast_data.iloc[:, 1:]
 
             # Display the forecasted data in the main content area
             st.subheader("Hasil Peramalan")
