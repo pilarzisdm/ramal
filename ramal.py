@@ -46,7 +46,7 @@ if len(commodities) > 0:
             # Use the SMA to forecast future values
             last_date = forecast_data_commodity['Tanggal'].max()
             forecast_dates = pd.date_range(start=last_date + pd.DateOffset(1), periods=forecasting_days)
-            forecast_values = [forecast_data_commodity[commodity + '_SMA'].iloc[-1]] * forecasting_days
+            forecast_values = [None] * forecasting_days
             forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
 
             # Concatenate the forecasted data to the original data
