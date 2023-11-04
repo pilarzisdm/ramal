@@ -45,7 +45,7 @@ if len(commodities) > 0:
                 df.set_index('Tanggal', inplace=True)
 
                 # Fit ARIMA model
-                model = ARIMA(df, order=(5, 1, 0))  # You can adjust the order based on your data and requirements
+                model = ARIMA(df, order=(1, 1, 0))  # You can adjust the order based on your data and requirements
                 model_fit = model.fit()
 
                 # Make future forecasts
