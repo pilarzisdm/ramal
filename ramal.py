@@ -53,7 +53,7 @@ if len(commodities) > 0:
         #st.write(forecast_data.tail(forecasting_days)[commodities])
         # Display the forecasted data with only the date part (remove time)
         # Display the forecasted data with only the date part (remove time)
-        date_forecast = forecast_data.tail(forecasting_days)[commodities].index.strftime('%Y-%m-%d')
+        date_forecast = forecast_data.tail(forecasting_days)[commodities].dt.date
         st.write(date_forecast)
 
         
