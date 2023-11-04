@@ -40,7 +40,7 @@ if len(commodities) > 0:
             # Calculate forecasts for the selected number of days into the future
             last_date = forecast_data.index[-1]
             for day in range(1, forecasting_days + 1):
-                next_date = last_date + pd.Timedelta(days=day)
+                next_date = last_date + pd.to_timedelta(day, unit='D')
                 forecast_data.loc[next_date, commodity] = None  # Initialize forecast values
 
         # Display the forecasted data
