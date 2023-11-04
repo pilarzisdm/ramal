@@ -16,7 +16,7 @@ commodities = st.sidebar.multiselect("Pilih satu atau lebih komoditas", ["Beras"
  # Perform forecasting for selected commodities into the future
 st.sidebar.title("Peramalan Harga Komoditas untuk Hari Mendatang")
 
-forecasting_days = st.number_input("Masukkan jumlah hari untuk peramalan:", min_value=1, step=1)
+forecasting_days = st.sidebar.number_input("Masukkan jumlah hari untuk peramalan:", min_value=1, step=1)
 
 # Main content
 st.title("Peramalan Harga Komoditas Harian")
