@@ -37,12 +37,9 @@ if len(commodities) > 0:
         forecast_data = selected_data.copy()
 
         for commodity in commodities:
-            # Calculate forecasts for the selected number of days into the future
             last_date = forecast_data.index[-1]
-            forecast_dates = []
-            for day in range(1, forecasting_days + 1):
-                next_date = last_date + pd.DateOffset(days=day)
-                forecast_dates.append(next_date)
+            # Create a date range for forecasting
+            forecast_dates = pd.date_range(start=last_date + pd.DateOffset(1), periods=forecasting_days)
             forecast_values = [None] * forecasting_days
             forecast_data = forecast_data.append(pd.DataFrame({commodity: forecast_values}, index=forecast_dates))
 
