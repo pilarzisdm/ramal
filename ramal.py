@@ -61,4 +61,4 @@ if len(commodities) > 0:
 
             # Display the forecasted data in the main content area without the index column
             st.subheader("Hasil Peramalan")
-            st.dataframe(forecast_data.tail(forecasting_days))
+            st.dataframe(forecast_data.tail(forecasting_days), use_container_width=True)
