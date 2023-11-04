@@ -4,7 +4,7 @@ import numpy as np
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
 # Load the CSV data
-@st.cache_data
+@st.cache
 def load_data():
     data = pd.read_csv("ramal.csv")
     data['Tanggal'] = pd.to_datetime(data['Tanggal'])  # Parse the date column as datetime
@@ -59,6 +59,6 @@ if len(commodities) > 0:
             # Format the forecasted data to remove decimal places
             forecast_data = forecast_data.round(0)
 
-            # Display the forecasted data in the main content area
+            # Display the forecasted data in the main content area without the index column
             st.subheader("Hasil Peramalan")
-            st.write(forecast_data.tail(forecasting_days))
+            st.dataframe(forecast_data.tail(forecasting_days))
