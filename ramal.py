@@ -13,6 +13,11 @@ def load_data():
 st.sidebar.title("Pilih Komoditas")
 commodities = st.sidebar.multiselect("Pilih satu atau lebih komoditas", ["Beras", "Daging Ayam", "Telur Ayam", "Cabai Merah", "Cabai Rawit"])
 
+ # Perform forecasting for selected commodities into the future
+st.sidebar.title("Peramalan Harga Komoditas untuk Hari Mendatang")
+
+forecasting_days = st.number_input("Masukkan jumlah hari untuk peramalan:", min_value=1, step=1)
+
 # Main content
 st.title("Peramalan Harga Komoditas Harian")
 
@@ -29,9 +34,9 @@ if len(commodities) > 0:
     st.write(selected_data.set_index('Tanggal'))
 
     # Perform forecasting for selected commodities into the future
-    st.subheader("Peramalan Harga Komoditas untuk Hari Mendatang")
+    #st.subheader("Peramalan Harga Komoditas untuk Hari Mendatang")
 
-    forecasting_days = st.number_input("Masukkan jumlah hari untuk peramalan:", min_value=1, step=1)
+    #forecasting_days = st.number_input("Masukkan jumlah hari untuk peramalan:", min_value=1, step=1)
 
     if st.button("Forecast"):
         forecast_data = selected_data.copy()
