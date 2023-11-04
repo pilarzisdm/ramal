@@ -1,8 +1,9 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 
 # Load the CSV data
-@st.cache_data
+@st.cache
 def load_data():
     data = pd.read_csv("harga_real.csv")
     data['Tanggal'] = pd.to_datetime(data['Tanggal'])  # Parse the date column as datetime
@@ -43,16 +44,14 @@ if len(commodities) > 0:
                 # Use the SMA to forecast future values for each selected commodity
                 last_date = forecast_data['Tanggal'].max()
 
-                # Create forecast values as a list starting from the last date
-                forecast_dates = pd.date_range(start=last_date + pd.DateOffset(1), periods=forecasting_days)
-                forecast_values = [forecast_data[commodity + '_SMA'].iloc[-1]] * forecasting_days
-                forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
+                # Create forecast values as an array
+                forecast_values = np.array([forecast_data[commodity + '_SMA'].iloc[-1]] * forecasting_days)
 
                 # Update the forecasted values for the selected commodity in the main DataFrame
-                forecast_data = pd.concat([forecast_data, forecast_df])
+                forecast_data[commodity].iloc[-forecasting_days:] = forecast_values
 
-            # Remove the duplicate columns (commodity + '_SMA')
-            forecast_data = forecast_data.drop(columns=[commodity + '_SMA'])
+                # Remove the duplicate columns (commodity + '_SMA')
+                forecast_data = forecast_data.drop(columns=[commodity + '_SMA'])
 
             # Display the forecasted data in the main content area
             st.subheader("Hasil Peramalan")
