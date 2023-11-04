@@ -22,7 +22,8 @@ data = load_data()
 # Filter data based on selected commodities
 if len(commodities) > 0:
     selected_data = data[['Tanggal'] + commodities]
-    selected_data = selected_data.sort values by = 'Tanggal', ascending=False)
+    selected_data = selected_data.sort_values(by='Tanggal', ascending=False)
+
 
     st.subheader("Harga Komoditas")
     selected_data['Tanggal'] = selected_data['Tanggal'].dt.date  # Extract date portion
