@@ -38,10 +38,11 @@ if len(commodities) > 0:
 
         for commodity in commodities:
             last_date = forecast_data.index[-1]
-            # Create a date range for forecasting
-            forecast_dates = pd.date_range(start=last_date + pd.DateOffset(1), periods=forecasting_days)
+            # Create forecasted values for the selected number of days into the future
             forecast_values = [None] * forecasting_days
-            forecast_data = forecast_data.append(pd.DataFrame({commodity: forecast_values}, index=forecast_dates))
+            forecast_index = [last_date + pd.DateOffset(days=i + 1) for i in range(forecasting_days)]
+            forecast_series = pd.Series(forecast_values, index=forecast_index, name=commodity)
+            forecast_data = forecast_data.append(forecast_series)
 
         # Display the forecasted data
         st.write(forecast_data.tail(forecasting_days))
