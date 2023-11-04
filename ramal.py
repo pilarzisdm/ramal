@@ -57,7 +57,7 @@ if len(commodities) > 0:
                 forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
 
                 # Update the forecasted values for the selected commodity in the main DataFrame
-                forecast_data = forecast_data.append(forecast_df)
+                forecast_data = pd.concat([forecast_data, forecast_df])
 
             # Format the forecasted data to remove decimal places
             forecast_data = forecast_data.round(0)
