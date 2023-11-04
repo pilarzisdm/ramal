@@ -13,6 +13,9 @@ def load_data():
 st.sidebar.title("Pilih Komoditas")
 commodities = st.sidebar.multiselect("Pilih satu atau lebih komoditas", ["Beras", "Daging Ayam", "Telur Ayam", "Cabai Merah", "Cabai Rawit"])
 
+# Main content
+st.title("Peramalan Harga Komoditas Harian")
+
 # Add number input and forecast button to the sidebar when commodities are selected
 if len(commodities) > 0:
     forecasting_days = st.sidebar.number_input("Masukkan jumlah hari untuk peramalan:", min_value=1, step=1)
