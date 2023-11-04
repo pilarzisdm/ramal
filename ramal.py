@@ -47,6 +47,12 @@ if len(commodities) > 0:
                 # Create forecast values as an array
                 forecast_values = np.array([forecast_data[commodity + '_SMA'].iloc[-1]] * forecasting_days)
 
+                # Create date range starting from the next day after the last date in the data
+                forecast_dates = pd.date_range(start=last_date + pd.DateOffset(1), periods=forecasting_days)
+
+                # Create a DataFrame for the forecasted commodity values
+                forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
+
                 # Update the forecasted values for the selected commodity in the main DataFrame
                 forecast_data[commodity].iloc[-forecasting_days:] = forecast_values
 
