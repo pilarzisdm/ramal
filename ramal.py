@@ -52,6 +52,9 @@ if len(commodities) > 0:
                 # Remove the duplicate columns (commodity + '_SMA')
                 forecast_data = forecast_data.drop(columns=[commodity + '_SMA'])
 
+            # Remove the first column (index column)
+            forecast_data = forecast_data.iloc[:, 1:]
+
             # Display the forecasted data in the main content area
             st.subheader("Hasil Peramalan")
             st.write(forecast_data.tail(forecasting_days))
