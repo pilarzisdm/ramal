@@ -43,17 +43,14 @@ if len(commodities) > 0:
             # Calculate the Simple Moving Average (SMA) for the commodity
             forecast_data_commodity[commodity + '_SMA'] = forecast_data_commodity[commodity].rolling(window=7).mean()
 
-            # Use the SMA to forecast future values
+            # Use the SMA to forecast future values for each commodity
             last_date = forecast_data_commodity['Tanggal'].max()
             forecast_dates = pd.date_range(start=last_date + pd.DateOffset(1), periods=forecasting_days)
             forecast_values = [None] * forecasting_days
             forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
 
-            # Concatenate the forecasted data to the original data
-            forecast_data_commodity = pd.concat([forecast_data_commodity, forecast_df])
-
-            # Update the combined forecast data
-            forecast_data = forecast_data.merge(forecast_data_commodity[['Tanggal', commodity, commodity + '_SMA']], on='Tanggal', how='outer')
+            # Merge the forecasted data for each commodity into the final forecast data
+            forecast_data = forecast_data.merge(forecast_df, left_index=True, right_index=True, how='outer')
 
         # Display the forecasted data
         st.write(forecast_data.tail(forecasting_days))
