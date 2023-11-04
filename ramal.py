@@ -13,44 +13,41 @@ def load_data():
 st.sidebar.title("Pilih Komoditas")
 commodities = st.sidebar.multiselect("Pilih satu atau lebih komoditas", ["Beras", "Daging Ayam", "Telur Ayam", "Cabai Merah", "Cabai Rawit"])
 
-# Main content
-st.title("Peramalan Harga Komoditas Harian")
-
-# Load data
-data = load_data()
-
-# Filter data based on selected commodities
+# Add number input and forecast button to the sidebar when commodities are selected
 if len(commodities) > 0:
-    selected_data = data[['Tanggal'] + commodities]
-    selected_data = selected_data.sort_values(by='Tanggal', ascending=False)
+    forecasting_days = st.sidebar.number_input("Masukkan jumlah hari untuk peramalan:", min_value=1, step=1)
 
-    st.subheader("Harga Komoditas")
-    selected_data['Tanggal'] = selected_data['Tanggal'].dt.date  # Extract date portion
-    st.write(selected_data.set_index('Tanggal'))
+    if st.sidebar.button("Forecast"):
+        data = load_data()
 
-    # Perform forecasting for selected commodities into the future
-    st.subheader("Peramalan Harga Komoditas untuk Hari Mendatang")
+        # Filter data based on selected commodities
+        selected_data = data[['Tanggal'] + commodities]
+        selected_data = selected_data.sort_values(by='Tanggal', ascending=False)
 
-    forecasting_days = st.number_input("Masukkan jumlah hari untuk peramalan:", min_value=1, step=1)
+        st.subheader("Harga Komoditas")
+        selected_data['Tanggal'] = selected_data['Tanggal'].dt.date  # Extract date portion
+        st.write(selected_data.set_index('Tanggal'))
 
-    if st.button("Forecast"):
-        forecast_data = selected_data.copy()
+        st.subheader("Peramalan Harga Komoditas untuk Hari Mendatang")
 
-        for commodity in commodities:
-            # Calculate the Simple Moving Average (SMA) for the commodity
-            forecast_data[commodity + '_SMA'] = forecast_data[commodity].rolling(window=7).mean()
+        if len(commodities) > 0:
+            forecast_data = selected_data.copy()
 
-            # Use the SMA to forecast future values
-            last_date = forecast_data['Tanggal'].max()
-            forecast_dates = pd.date_range(start=last_date + pd.DateOffset(1), periods=forecasting_days)
-            forecast_values = [forecast_data[commodity + '_SMA'].iloc[-1]] * forecasting_days
-            forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
+            for commodity in commodities:
+                # Calculate the Simple Moving Average (SMA) for the commodity
+                forecast_data[commodity + '_SMA'] = forecast_data[commodity].rolling(window=7).mean()
 
-            # Concatenate the forecasted data to the original data
-            forecast_data = pd.concat([forecast_data, forecast_df])
+                # Use the SMA to forecast future values
+                last_date = forecast_data['Tanggal'].max()
+                forecast_dates = pd.date_range(start=last_date + pd.DateOffset(1), periods=forecasting_days)
+                forecast_values = [forecast_data[commodity + '_SMA'].iloc[-1]] * forecasting_days
+                forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
 
-        # Display the forecasted data
-        st.write(forecast_data.tail(forecasting_days)[commodities])
+                # Concatenate the forecasted data to the original data
+                forecast_data = pd.concat([forecast_data, forecast_df])
 
-else:
-    st.warning("Silakan pilih satu atau lebih komoditas.")
+            # Display the forecasted data
+            st.write(forecast_data.tail(forecasting_days)[commodities])
+
+    else:
+        st.warning("Silakan pilih satu atau lebih komoditas.")
