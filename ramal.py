@@ -1,11 +1,9 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-from statsmodels.tsa.arima.model import ARIMA
+from fbprophet import Prophet
 
 # Load the CSV data
-@st.cache_data
+@st.cache
 def load_data():
     data = pd.read_csv("harga_real.csv")
     data['Tanggal'] = pd.to_datetime(data['Tanggal'])  # Parse the date column as datetime
@@ -40,27 +38,19 @@ if len(commodities) > 0:
             forecast_data = selected_data.copy()
 
             for commodity in commodities:
-                # Prepare data for ARIMA
+                # Prepare data for Prophet
                 df = forecast_data[['Tanggal', commodity]].copy()
-                df.set_index('Tanggal', inplace=True)
+                df.columns = ['ds', 'y']
 
-                # Fit ARIMA model
-                model = ARIMA(df, order=(1, 1, 0))  # You can adjust the order based on your data and requirements
-                model_fit = model.fit()
+                # Initialize and fit Prophet model
+                model = Prophet()
+                model.fit(df)
 
-                # Make future forecasts
-                forecast_values = model_fit.forecast(steps=forecasting_days)
+                # Make future dataframe for forecasting
+                future = model.make_future_dataframe(periods=forecasting_days)
+                forecast = model.predict(future)
 
-                # Create date range for forecasting period
-                last_date = df.index.max()
-                forecast_dates = pd.date_range(start=last_date + pd.DateOffset(1), periods=forecasting_days)
+                # Extract and display forecasted values
+                st.subheader(f"Peramalan {commodity} untuk {forecasting_days} hari mendatang")
+                st.write(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(forecasting_days))
 
-                # Create a DataFrame for the forecasted data
-                forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
-
-                # Concatenate the forecasted data to the original data
-                forecast_data = pd.concat([forecast_data, forecast_df])
-
-            # Display the forecasted data in the main content area
-            st.subheader("Hasil Peramalan")
-            st.write(forecast_data.tail(forecasting_days)[commodities])
