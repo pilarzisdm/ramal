@@ -49,15 +49,16 @@ if len(commodities) > 0:
             # Concatenate the forecasted data to the original data
             forecast_data = pd.concat([forecast_data, forecast_df])
 
-        # Display the forecasted data
-        st.write([str(date)[:10] for date in forecast_data.tail(forecasting_days).index][commodities])
-        # Display the forecasted data with only the date part (remove time)
-        #date_forecast = [str(date)[:10] for date in forecast_data.tail(forecasting_days).index]
-        #st.write(date_forecast)
         # Display the forecasted data with both commodities and the date part (remove time)
-        date_forecast = [str(date)[:10] for date in forecast_data.tail(forecasting_days).index]
-        forecast_with_commodities = list(zip(commodities, date_forecast))
-        st.write(forecast_with_commodities)
+        forecasted_data = forecast_data.tail(forecasting_days)[commodities]
+        data_to_display = []
+
+        for commodity in commodities:
+            date_forecast = [str(date)[:10] for date in forecasted_data.index]
+            data_to_display.append({'Commodity': commodity, 'Date': date_forecast})
+
+        st.write(data_to_display)
+
 
 else:
     st.warning("Silakan pilih satu atau lebih komoditas.")
