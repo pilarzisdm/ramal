@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from fbprophet import Prophet
+import matplotlib.pyplot as plt
 
 # Load the CSV data
 @st.cache_data
@@ -38,19 +38,28 @@ if len(commodities) > 0:
             forecast_data = selected_data.copy()
 
             for commodity in commodities:
-                # Prepare data for Prophet
-                df = forecast_data[['Tanggal', commodity]].copy()
-                df.columns = ['ds', 'y']
+                # Calculate the Simple Moving Average (SMA) for the commodity
+                forecast_data[commodity + '_SMA'] = forecast_data[commodity].rolling(window=7).mean()
 
-                # Initialize and fit Prophet model
-                model = Prophet()
-                model.fit(df)
+                # Use the SMA to forecast future values
+                last_date = forecast_data['Tanggal'].max()
+                forecast_dates = pd.date_range(start=last_date + pd.DateOffset(1), periods=forecasting_days)
 
-                # Make future dataframe for forecasting
-                future = model.make_future_dataframe(periods=forecasting_days)
-                forecast = model.predict(future)
+                # Calculate the moving average for the past 'window' days
+                window = 7
+                forecast_values = []
+                for i in range(forecasting_days):
+                    if i < window:
+                        forecast_values.append(forecast_data[commodity].iloc[-window:].mean())
+                    else:
+                        forecast_values.append(forecast_data[commodity].iloc[-window:].mean())
+                        window -= 1
 
-                # Extract and display forecasted values
-                st.subheader(f"Peramalan {commodity} untuk {forecasting_days} hari mendatang")
-                st.write(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(forecasting_days))
+                forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
 
+                # Concatenate the forecasted data to the original data
+                forecast_data = pd.concat([forecast_data, forecast_df])
+
+            # Display the forecasted data in the main content area
+            st.subheader("Hasil Peramalan")
+            st.write(forecast_data.tail(forecasting_days)[commodities])
