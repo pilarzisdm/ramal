@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
-from statsmodels.tsa.arima_model import ARIMA
+from statsmodels.tsa.arima.model import ARIMA
 
 # Load the CSV data
 @st.cache_data
@@ -45,8 +45,8 @@ if len(commodities) > 0:
                 df.set_index('Tanggal', inplace=True)
 
                 # Fit ARIMA model
-                model = ARIMA(df, order=(5,1,0))  # You can adjust the order based on your data and requirements
-                model_fit = model.fit(disp=0)
+                model = ARIMA(df, order=(5, 1, 0))  # You can adjust the order based on your data and requirements
+                model_fit = model.fit()
 
                 # Make future forecasts
                 forecast_values = model_fit.forecast(steps=forecasting_days)
