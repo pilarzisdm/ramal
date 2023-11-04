@@ -60,20 +60,25 @@ if len(commodities) > 0:
 
     st.pyplot(fig)
 
-    # Perform multi-day-ahead forecasting for selected commodities
-    st.subheader("Peramalan Harga Komoditas untuk Hari Berikutnya")
+    # Perform forecasting for selected commodities into the future
+    st.subheader("Peramalan Harga Komoditas untuk Hari Mendatang")
 
-    forecasting_period = st.number_input("Masukkan jumlah hari untuk peramalan:", min_value=1, step=1)
+    forecasting_days = st.number_input("Masukkan jumlah hari untuk peramalan:", min_value=1, step=1)
 
     if st.button("Forecast"):
         forecast_data = resampled_data.copy()
 
         for commodity in commodities:
             # Calculate the multi-day-ahead forecast using a rolling mean
-            forecast_data[commodity + ' (Forecast)'] = forecast_data[commodity].rolling(window=forecasting_period).mean()
+            forecast_values = []
+            for _ in range(forecasting_days):
+                last_price = forecast_data[commodity].iloc[-1]
+                forecast_values.append(last_price)
+                # Append the forecasted value for the next day
+                forecast_data[commodity + f" (Forecast D+{_+1})"] = forecast_values
 
         # Display the forecasted data
-        st.write(forecast_data.tail(forecasting_period))
+        st.write(forecast_data.tail(forecasting_days))
 
 else:
     st.warning("Silakan pilih satu atau lebih komoditas.")
