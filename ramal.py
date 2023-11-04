@@ -52,7 +52,11 @@ if len(commodities) > 0:
                 forecast_values = [last_value] * forecasting_days
                 forecast_dates = pd.date_range(start=start_date, periods=forecasting_days)
 
-                forecast_data = forecast_data.append(pd.DataFrame({commodity: forecast_values}, index=forecast_dates))
+                # Create a DataFrame for the forecasted commodity values
+                forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
+
+                # Concatenate the forecasted data with the existing data
+                forecast_data = pd.concat([forecast_data, forecast_df])
 
             # Format the forecasted data to remove decimal places
             forecast_data = forecast_data.round(0)
