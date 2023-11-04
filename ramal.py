@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import statsmodels.api as sm
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
 # Load the CSV data
 @st.cache
@@ -23,7 +23,7 @@ if len(commodities) > 0:
 
     # Filter data based on selected commodities
     selected_data = data[['Tanggal'] + commodities]
-    selected_data = selected_data.sort_values(by='Tanggal', ascending=False)
+    selected_data = selected_data.sort values(by='Tanggal', ascending=False)
 
     # Display the data table for selected commodities
     st.subheader("Harga Komoditas")
@@ -46,7 +46,7 @@ if len(commodities) > 0:
                 forecast_dates = pd.date_range(start=start_date, periods=forecasting_days)
 
                 # Fit the Exponential Smoothing model and make forecasts
-                model = sm.ExponentialSmoothing(forecast_data[commodity], trend='add', seasonal='add', seasonal_periods=7)
+                model = ExponentialSmoothing(forecast_data[commodity], trend='add', seasonal='add', seasonal_periods=7)
                 model_fit = model.fit()
                 forecast_values = model_fit.forecast(steps=forecasting_days)
 
