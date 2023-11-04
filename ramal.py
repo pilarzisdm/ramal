@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 @st.cache_data
 def load_data():
     data = pd.read_csv("harga_real.csv")
-    data['Tanggal'] = pd.to_datetime(data['Tanggal'])  # Parse the date column as datetime
+    data['Tanggal'] = pd.to_datetime(data['Tanggal']).dt.date  
     return data
 
 # Sidebar: Select commodities
@@ -50,7 +50,7 @@ if len(commodities) > 0:
             # Concatenate the forecasted data to the original data
             forecast_data = pd.concat([forecast_data, forecast_df])
 
-        # Display the forecasted data with only the date part (remove time)
+        # Display the forecasted data 
         st.write(forecast_data.tail(forecasting_days)[commodities])
         
        
