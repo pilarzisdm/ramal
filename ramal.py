@@ -50,8 +50,11 @@ if len(commodities) > 0:
             forecast_data = pd.concat([forecast_data, forecast_df])
 
         # Display the forecasted data
-        st.write(forecast_data.tail(forecasting_days)[commodities])
-        
+        #st.write(forecast_data.tail(forecasting_days)[commodities])
+        # Display the forecasted data with only the first 10 characters of the date
+        date_forecast = forecast_data.tail(forecasting_days)[commodities].index.strftime('%Y-%m-%d').str[:10]
+        st.write(date_forecast)
+
         
 
 
