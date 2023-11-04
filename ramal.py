@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
 # Load the CSV data
 @st.cache
@@ -45,19 +44,15 @@ if len(commodities) > 0:
             forecast_data = selected_data.copy()
 
             for commodity in commodities:
-                # Use Exponential Smoothing to forecast future values for each selected commodity
+                # Calculate the Simple Moving Average (SMA) for each selected commodity
+                forecast_data[commodity + '_SMA'] = forecast_data[commodity].rolling(window=7).mean()
+
+                # Use the SMA to forecast future values for each selected commodity
+                last_value = forecast_data[commodity].iloc[-1]
+                forecast_values = [last_value] * forecasting_days
                 forecast_dates = pd.date_range(start=start_date, periods=forecasting_days)
 
-                # Fit the Exponential Smoothing model and make forecasts
-                model = ExponentialSmoothing(forecast_data[commodity], trend='add', seasonal='add', seasonal_periods=7)
-                model_fit = model.fit()
-                forecast_values = model_fit.forecast(steps=forecasting_days)
-
-                # Create a DataFrame for the forecasted commodity values
-                forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
-
-                # Update the forecasted values for the selected commodity in the main DataFrame
-                forecast_data = pd.concat([forecast_data, forecast_df])
+                forecast_data = forecast_data.append(pd.DataFrame({commodity: forecast_values}, index=forecast_dates))
 
             # Format the forecasted data to remove decimal places
             forecast_data = forecast_data.round(0)
