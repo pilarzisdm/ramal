@@ -51,7 +51,7 @@ if len(commodities) > 0:
 
         # Display the forecasted data
         #st.write(forecast_data.tail(forecasting_days)[commodities])
-        st.write(forecast_data.tail(forecasting_days)[commodities].index.date)
+         st.write(forecast_data.tail(forecasting_days)[commodities].index.strftime('%Y-%m-%d'))
 
 else:
     st.warning("Silakan pilih satu atau lebih komoditas.")
