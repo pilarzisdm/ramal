@@ -1,9 +1,8 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 
 # Load the CSV data
-@st.cache_data
+@st.cache
 def load_data():
     data = pd.read_csv("harga_real.csv")
     data['Tanggal'] = pd.to_datetime(data['Tanggal'])  # Parse the date column as datetime
@@ -41,19 +40,13 @@ if len(commodities) > 0:
                 # Calculate the Simple Moving Average (SMA) for the commodity
                 forecast_data[commodity + '_SMA'] = forecast_data[commodity].rolling(window=7).mean()
 
-                # Use the SMA to forecast future values
+                # Use the SMA to forecast future values for each selected commodity
                 last_date = forecast_data['Tanggal'].max()
                 forecast_dates = pd.date_range(start=last_date + pd.DateOffset(1), periods=forecasting_days)
 
-                # Calculate the moving average for the past 'window' days
-                window = 7
                 forecast_values = []
                 for i in range(forecasting_days):
-                    if i < window:
-                        forecast_values.append(forecast_data[commodity].iloc[-window:].mean())
-                    else:
-                        forecast_values.append(forecast_data[commodity].iloc[-window:].mean())
-                        window -= 1
+                    forecast_values.append(forecast_data[commodity + '_SMA'].iloc[-1])
 
                 forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
 
