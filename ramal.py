@@ -13,26 +13,27 @@ def load_data():
 st.sidebar.title("Pilih Komoditas")
 commodities = st.sidebar.multiselect("Pilih satu atau lebih komoditas", ["Beras", "Daging Ayam", "Telur Ayam", "Cabai Merah", "Cabai Rawit"])
 
-# Main content
+# Main content area
 st.title("Peramalan Harga Komoditas Harian")
 
-# Add number input and forecast button to the sidebar when commodities are selected
 if len(commodities) > 0:
+    # Load data when commodities are selected
+    data = load_data()
+
+    # Filter data based on selected commodities
+    selected_data = data[['Tanggal'] + commodities]
+    selected_data = selected_data.sort_values(by='Tanggal', ascending=False)
+
+    # Display the data table for selected commodities
+    st.subheader("Harga Komoditas")
+    selected_data['Tanggal'] = selected_data['Tanggal'].dt.date  # Extract date portion
+    st.write(selected_data.set_index('Tanggal'))
+
+    # Sidebar: Input for forecasting
+    st.sidebar.subheader("Peramalan Harga Komoditas untuk Hari Mendatang")
     forecasting_days = st.sidebar.number_input("Masukkan jumlah hari untuk peramalan:", min_value=1, step=1)
 
     if st.sidebar.button("Forecast"):
-        data = load_data()
-
-        # Filter data based on selected commodities
-        selected_data = data[['Tanggal'] + commodities]
-        selected_data = selected_data.sort_values(by='Tanggal', ascending=False)
-
-        st.subheader("Harga Komoditas")
-        selected_data['Tanggal'] = selected_data['Tanggal'].dt.date  # Extract date portion
-        st.write(selected_data.set_index('Tanggal'))
-
-        st.subheader("Peramalan Harga Komoditas untuk Hari Mendatang")
-
         if len(commodities) > 0:
             forecast_data = selected_data.copy()
 
@@ -50,7 +51,5 @@ if len(commodities) > 0:
                 forecast_data = pd.concat([forecast_data, forecast_df])
 
             # Display the forecasted data
-            st.write(forecast_data.tail(forecasting_days)[commodities])
-
-    else:
-        st.warning("Silakan pilih satu atau lebih komoditas.")
+            st.sidebar.subheader("Hasil Peramalan")
+            st.sidebar.write(forecast_data.tail(forecasting_days)[commodities])
