@@ -27,7 +27,7 @@ if len(commodities) > 0:
 
     st.subheader("Harga Komoditas")
     selected_data['Tanggal'] = selected_data['Tanggal'].dt.date  # Extract date portion
-    #st.write(selected_data.set_index('Tanggal'))
+    st.write(selected_data.set_index('Tanggal'))
 
     # Perform forecasting for selected commodities into the future
     st.subheader("Peramalan Harga Komoditas untuk Hari Mendatang")
@@ -42,7 +42,7 @@ if len(commodities) > 0:
             forecast_data[commodity + '_SMA'] = forecast_data[commodity].rolling(window=7).mean()
 
             # Use the SMA to forecast future values
-            last_date = forecast_data['Tanggal'].max()
+            last_date = forecast_data.set_index['Tanggal'].max()
             forecast_dates = pd.date_range(start=last_date + pd.DateOffset(1), periods=forecasting_days)
             forecast_values = [forecast_data[commodity + '_SMA'].iloc[-1]] * forecasting_days
             forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
@@ -52,6 +52,7 @@ if len(commodities) > 0:
 
         # Display the forecasted data with only the date part (remove time)
         st.write(forecast_data.tail(forecasting_days)[commodities])
-
+        
+        #st.write(selected_data.set_index('Tanggal'))
 else:
     st.warning("Silakan pilih satu atau lebih komoditas.")
