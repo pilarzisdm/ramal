@@ -39,13 +39,15 @@ if len(commodities) > 0:
                 last_date = forecast_data['Tanggal'].max()
                 forecast_date = last_date + pd.DateOffset(1)  # Change this line to forecast for November 1st
 
-                # Fit the Exponential Smoothing model and make a single-step forecast
-                model = ExponentialSmoothing(forecast_data[commodity], trend='add', seasonal='add', seasonal_periods=7)
-                model_fit = model.fit()
-                forecast_value = model_fit.forecast(steps=1)[0]
+                # Check if the forecast_date exists in the DataFrame
+                if forecast_date in forecast_data['Tanggal'].values:
+                    # Fit the Exponential Smoothing model and make a single-step forecast
+                    model = ExponentialSmoothing(forecast_data[commodity], trend='add', seasonal='add', seasonal_periods=7)
+                    model_fit = model.fit()
+                    forecast_value = model_fit.forecast(steps=1)[0]
 
-                # Update the forecasted value for the selected commodity in the main DataFrame
-                forecast_data[commodity].loc[forecast_date] = forecast_value
+                    # Update the forecasted value for the selected commodity in the main DataFrame
+                    forecast_data.loc[forecast_data['Tanggal'] == forecast_date, commodity] = forecast_value
 
             # Format the forecasted data to remove decimal places
             forecast_data = forecast_data.round(0)
