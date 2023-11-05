@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
 # Load the CSV data
@@ -31,14 +30,14 @@ if len(commodities) > 0:
     st.write(selected_data.set_index('Tanggal'))
 
     # Button to trigger forecasting
-    if st.button("Forecast Next Period"):
+    if st.button("Forecast for November 1st"):
         if len(commodities) > 0:
             forecast_data = selected_data.copy()
 
             for commodity in commodities:
-                # Use Exponential Smoothing to forecast the next period for each selected commodity
+                # Use Exponential Smoothing to forecast prices for November 1st for each selected commodity
                 last_date = forecast_data['Tanggal'].max()
-                start_date = last_date + pd.DateOffset(1)
+                forecast_date = last_date + pd.DateOffset(1)  # Change this line to forecast for November 1st
 
                 # Fit the Exponential Smoothing model and make a single-step forecast
                 model = ExponentialSmoothing(forecast_data[commodity], trend='add', seasonal='add', seasonal_periods=7)
@@ -46,7 +45,7 @@ if len(commodities) > 0:
                 forecast_value = model_fit.forecast(steps=1)[0]
 
                 # Update the forecasted value for the selected commodity in the main DataFrame
-                forecast_data[commodity].iloc[-1] = forecast_value
+                forecast_data[commodity].loc[forecast_date] = forecast_value
 
             # Format the forecasted data to remove decimal places
             forecast_data = forecast_data.round(0)
@@ -56,4 +55,4 @@ if len(commodities) > 0:
 
             # Display the forecasted data in the main content area
             st.subheader("Hasil Peramalan")
-            st.dataframe(forecast_data.tail(1))
+            st.dataframe(forecast_data.loc[forecast_date:forecast_date])
