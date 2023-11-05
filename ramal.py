@@ -38,6 +38,7 @@ if len(commodities) > 0:
                 # Use Exponential Smoothing to forecast prices for November 1st for each selected commodity
                 last_date = forecast_data['Tanggal'].max()
                 forecast_date = last_date + pd.DateOffset(1)  # Change this line to forecast for November 1st
+                forecast_date = pd.Timestamp(forecast_date)  # Convert forecast_date to Timestamp
 
                 # Check if the forecast_date exists in the DataFrame
                 if forecast_date in forecast_data['Tanggal'].values:
