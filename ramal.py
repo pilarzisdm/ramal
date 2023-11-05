@@ -4,7 +4,7 @@ import numpy as np
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
 # Load the CSV data
-@st.cache_data
+@st.cache
 def load_data():
     data = pd.read_csv("ramal.csv")
     data['Tanggal'] = pd.to_datetime(data['Tanggal'])  # Parse the date column as datetime
@@ -30,31 +30,23 @@ if len(commodities) > 0:
     selected_data['Tanggal'] = selected_data['Tanggal'].dt.date  # Extract date portion
     st.write(selected_data.set_index('Tanggal'))
 
-    # Sidebar: Input for forecasting
-    st.sidebar.subheader("Peramalan Harga Komoditas")
-    forecasting_days = st.sidebar.number_input("Masukkan jumlah hari untuk peramalan:", min_value=1, step=1)
-
-    if st.sidebar.button("Forecast"):
+    # Button to trigger forecasting
+    if st.button("Forecast Next Period"):
         if len(commodities) > 0:
             forecast_data = selected_data.copy()
 
             for commodity in commodities:
-                # Use Exponential Smoothing to forecast future values for each selected commodity
+                # Use Exponential Smoothing to forecast the next period for each selected commodity
                 last_date = forecast_data['Tanggal'].max()
                 start_date = last_date + pd.DateOffset(1)
 
-                forecast_dates = pd.date_range(start=start_date, periods=forecasting_days)
-
-                # Fit the Exponential Smoothing model and make forecasts
+                # Fit the Exponential Smoothing model and make a single-step forecast
                 model = ExponentialSmoothing(forecast_data[commodity], trend='add', seasonal='add', seasonal_periods=7)
                 model_fit = model.fit()
-                forecast_values = model_fit.forecast(steps=forecasting_days)
+                forecast_value = model_fit.forecast(steps=1)[0]
 
-                # Create a DataFrame for the forecasted commodity values
-                forecast_df = pd.DataFrame({commodity: forecast_values}, index=forecast_dates)
-
-                # Update the forecasted values for the selected commodity in the main DataFrame
-                forecast_data[commodity].iloc[-forecasting_days:] = forecast_values
+                # Update the forecasted value for the selected commodity in the main DataFrame
+                forecast_data[commodity].iloc[-1] = forecast_value
 
             # Format the forecasted data to remove decimal places
             forecast_data = forecast_data.round(0)
@@ -64,4 +56,4 @@ if len(commodities) > 0:
 
             # Display the forecasted data in the main content area
             st.subheader("Hasil Peramalan")
-            st.dataframe(forecast_data.tail(forecasting_days))
+            st.dataframe(forecast_data.tail(1))
